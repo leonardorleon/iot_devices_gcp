@@ -125,7 +125,7 @@ def on_connect(client, unused_userdata, unused_flags, rc):
 
     # Subscribe to the commands topic, QoS 1 enables message acknowledgement.
     print("Subscribing to {}".format(mqtt_command_topic))
-    client.subscribe(mqtt_command_topic, qos=1)
+    client.subscribe(mqtt_command_topic, qos=0)
 
     # After a successful connect, reset backoff time and stop backing off.
     should_backoff = False
@@ -234,13 +234,16 @@ def get_payload():
     """
     Simulated payload, should be replaced with queries from an analyzer
     """
-    payload_keys = ["temperature", "pressure", "humidity"]
+    measurement_keys = ["temperature", "pressure", "humidity"]
+    measurements = {}
+    for key in measurement_keys:
+        measurements[key] = random.random()
+
     payload = {}
-    for key in payload_keys:
-        payload[key] = random.random()
-
+    payload["measurements"] = measurements
     payload["timestamp"] = datetime.datetime.strftime(datetime.datetime.now(timezone.utc), DATEFORMAT)
-
+    # payload["device"] = device_id
+    print(payload)
     return json.dumps(payload)
 
 
@@ -335,9 +338,11 @@ def main():
 
         # Publish data
         payload = get_payload()
-        print(payload)
-        client.publish(MQTT_TELEMETRY_TOPIC, payload, qos=1)
-
+        publish = False
+        if publish:
+            client.publish(MQTT_TELEMETRY_TOPIC, payload, qos=1)
+        else:
+            print("Publish is not currently enabled. Enable it before going live")
         time.sleep(15)
 
 
