@@ -4,6 +4,14 @@ This repository explores the usage of IoT devices on Google Cloud Platform. Ther
 
 ---
 
+## Cloud functions:
+
+* **process_and_store_measurements**
+
+Cloud function triggered by messages on telemetry topic of IoT devices. Measurements are stored to the correct collection on firestore.
+
+---
+
 ## Quickstart
 
 ### On Raspberry pi
